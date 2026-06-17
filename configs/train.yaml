@@ -1,0 +1,18 @@
+variant: m
+data: ../dataset/dataset.yaml
+epochs: 100
+batch: 16
+imgsz: 1024
+device: ""   # empty = auto-detect (cuda:0 if available, else cpu)
+project: runs/obb
+name: train
+exist_ok: true
+plots: true
+optimizer: MuSGD
+cos_lr: true
+warmup_epochs: 3
+patience: 20
+resume: false
+weights: ""
+finetune: false
+freeze_layers: 10

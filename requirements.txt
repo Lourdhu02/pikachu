@@ -1,0 +1,14 @@
+ultralytics>=8.4.0
+torch>=2.1.0
+torchvision
+onnx>=1.15.0
+onnxruntime-gpu>=1.17.0
+onnxsim
+opencv-python
+matplotlib
+seaborn
+pyyaml
+numpy
+pandas
+optuna
+scikit-learn

@@ -1,0 +1,7 @@
+format: onnx
+imgsz: 1024
+half: true
+dynamic: true
+simplify: true
+device: ""   # empty = auto-detect (cuda:0 if available, else cpu)
+int8: false
