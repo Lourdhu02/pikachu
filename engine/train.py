@@ -3,7 +3,7 @@ import yaml
 from pathlib import Path
 from ultralytics import YOLO
 
-from engine.utils import LocalCsvLogger, set_seed, plot_metrics
+from engine.utils import LocalCsvLogger, set_seed, plot_metrics, get_device
 
 
 def load_yaml(path: str) -> dict:
@@ -50,7 +50,7 @@ def main():
     epochs = cfg["epochs"]
     batch = cfg["batch"]
     imgsz = cfg["imgsz"]
-    device = cfg.get("device", "") or ("cuda:0" if __import__("torch").cuda.is_available() else "cpu")
+    device = cfg.get("device", "") or get_device()
     project = cfg.get("project", "runs/obb")
     name = cfg.get("name", "train")
     exist_ok = cfg.get("exist_ok", True)
@@ -105,29 +105,6 @@ def main():
     print(f"    Epochs: {epochs} | Batch: {batch} | Imgsz: {imgsz} | Device: {device}")
     print(f"    Optimizer: {optimizer} | CosLR: {cos_lr} | Warmup: {warmup_epochs}")
 
-    class FakeLogger:
-        def __init__(self, logger):
-            self.logger = logger
-
-        def on_batch_end(self, *a, **kw):
-            pass
-
-        def on_train_epoch_end(self, trainer):
-            epoch = trainer.epoch
-            m = trainer.metrics
-            metrics_row = {
-                "train_loss": m.get("train_loss", ""),
-                "val_loss": m.get("val_loss", ""),
-                "precision": m.get("metrics/precision(B)", m.get("precision", "")),
-                "recall": m.get("metrics/recall(B)", m.get("recall", "")),
-                "mAP50": m.get("metrics/mAP50(B)", m.get("mAP50", "")),
-                "mAP50-95": m.get("metrics/mAP50-95(B)", m.get("mAP50-95", "")),
-                "lr": m.get("lr", m.get("lr/lr", "")),
-            }
-            self.logger.log(epoch, metrics_row)
-
-    callbacks = {"on_train_epoch_end": FakeLogger(logger).on_train_epoch_end}
-
     results = model.train(
         data=data,
         epochs=epochs,
@@ -147,7 +124,7 @@ def main():
 
     best_mAP = results.results_dict.get("metrics/mAP50-95(B)", 0)
     print(f"\n{'='*50}")
-    print(f"[+] Training complete!")
+    print("[+] Training complete!")
     print(f"[+] Best mAP50-95: {best_mAP:.4f}")
     print(f"[+] Run directory: {run_dir}")
     print(f"[+] Weights: {run_dir / 'weights' / 'best.pt'}")

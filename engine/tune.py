@@ -4,6 +4,8 @@ from pathlib import Path
 import optuna
 from ultralytics import YOLO
 
+from engine.utils import get_device
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Hyperparameter tuning with Optuna")
@@ -31,7 +33,7 @@ def objective(trial, base_cfg, aug_cfg, args):
     cfg["epochs"] = args.epochs
     cfg["batch"] = args.batch
     cfg["imgsz"] = args.imgsz
-    cfg["device"] = args.device or ("cuda:0" if __import__("torch").cuda.is_available() else "cpu")
+    cfg["device"] = args.device or get_device()
 
     variant = cfg.get("variant", "m")
     weights_path = f"yolo26{variant}-obb.pt"
@@ -102,10 +104,10 @@ def main():
     )
 
     print(f"\n{'='*50}")
-    print(f"[+] Tuning complete!")
+    print("[+] Tuning complete!")
     print(f"    Best trial:     {study.best_trial.number}")
     print(f"    Best mAP50-95:  {study.best_value:.4f}")
-    print(f"    Best params:")
+    print("    Best params:")
     for k, v in study.best_params.items():
         print(f"        {k}: {v}")
     print(f"{'='*50}")

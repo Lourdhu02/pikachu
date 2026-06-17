@@ -1,7 +1,5 @@
 import os
-import json
 from pathlib import Path
-from io import BytesIO
 
 import cv2
 import numpy as np
@@ -9,11 +7,13 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 from ultralytics import YOLO
 
+import torch
+
 app = FastAPI(title="YOLO26-OBB Detection API", version="0.1.0")
 
 model = None
 model_path = os.environ.get("MODEL_PATH", "runs/obb/train/weights/best.pt")
-device = os.environ.get("DEVICE", "") or ("cuda:0" if __import__("torch").cuda.is_available() else "cpu")
+device = os.environ.get("DEVICE", "") or ("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 
 
 @app.on_event("startup")
@@ -26,7 +26,7 @@ def load_model():
         if alt.exists():
             path = alt
         else:
-            print(f"[!] No model found, API will return errors on /predict")
+            print("[!] No model found, API will return errors on /predict")
             return
     print(f"[*] Loading model from {path}")
     model = YOLO(str(path))

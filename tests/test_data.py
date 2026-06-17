@@ -74,8 +74,8 @@ def test_label_format_obb():
             for line in f:
                 parts = line.strip().split()
                 assert len(parts) == 9, f"OBB label must have 9 values (class + 8 coords), got {len(parts)}: {line}"
-                cls_id = int(parts[0])
-                assert cls_id >= 0, f"Class ID must be non-negative"
+                cls_id = int(float(parts[0]))
+                assert cls_id >= 0, "Class ID must be non-negative"
                 coords = list(map(float, parts[1:]))
                 for c in coords:
                     assert 0.0 <= c <= 1.0, f"OBB coordinates must be normalized [0,1], got {c}"

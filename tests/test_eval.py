@@ -1,5 +1,4 @@
 from pathlib import Path
-import yaml
 
 
 def test_evaluate_script_exists():

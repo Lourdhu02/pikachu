@@ -3,7 +3,7 @@ from pathlib import Path
 import yaml
 from ultralytics import YOLO
 
-from engine.utils import save_results
+from engine.utils import save_results, get_device
 
 
 def parse_args():
@@ -28,7 +28,7 @@ def main():
     data = args.data or cfg.get("data", "../dataset/dataset.yaml")
     name = args.name or f"eval_{Path(args.weights).stem}"
 
-    device = args.device or ("cuda:0" if __import__("torch").cuda.is_available() else "cpu")
+    device = args.device or get_device()
 
     print(f"[*] Loading model from {args.weights}")
     model = YOLO(args.weights)
@@ -65,9 +65,8 @@ def main():
     out_path = Path(args.project) / name / "eval_summary.csv"
     save_results(summary, str(out_path))
 
-    csv_metrics = str(Path(args.project) / name / "results.csv")
     print(f"\n{'='*50}")
-    print(f"[+] Evaluation complete!")
+    print("[+] Evaluation complete!")
     print(f"    Precision:  {summary['precision']:.4f}")
     print(f"    Recall:     {summary['recall']:.4f}")
     print(f"    mAP50:      {summary['mAP50']:.4f}")

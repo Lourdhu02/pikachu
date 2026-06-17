@@ -85,7 +85,6 @@ def main():
     (out_dir / "val" / "labels").mkdir(parents=True, exist_ok=True)
 
     op = shutil.copy2 if args.copy else shutil.move
-    op_name = "Copied" if args.copy else "Moved"
 
     for img_path, lbl_path, _ in train_pairs:
         op(str(img_path), str(out_dir / "train" / "images" / img_path.name))
@@ -121,10 +120,10 @@ names: {names}
         f.write(yaml_content)
 
     print(f"\n{'='*50}")
-    print(f"[+] Split complete!")
+    print("[+] Split complete!")
     print(f"    Train: {len(train_pairs)} images")
     print(f"    Val:   {len(val_pairs)} images")
-    print(f"    Class distribution:")
+    print("    Class distribution:")
     for c in all_classes:
         print(f"      Class {c}: {train_classes.get(c, 0)} train / {val_classes.get(c, 0)} val")
     print(f"    Dataset YAML: {out_yaml_path}")

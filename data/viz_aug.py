@@ -6,8 +6,6 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from ultralytics import YOLO
-from ultralytics.data.augment import v8_Transforms
 
 
 def parse_args():
@@ -60,9 +58,6 @@ def main():
 
     print(f"[*] Generating augmentation samples from {img_dir}")
 
-    import torch
-    from ultralytics.utils import DEFAULT_CFG
-    from ultralytics.data.augment import Compose, Format, RandomFlip, RandomHSV, RandomPerspective
 
     for idx, img_path in enumerate(selected):
         img_bgr = cv2.imread(str(img_path))

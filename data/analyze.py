@@ -180,12 +180,11 @@ def main():
 
     plot_distributions(combined, output_dir)
 
-    total_with_objs = sum(1 for s in all_stats.values() for _ in [1])
     mean_objs = combined["total_instances"] / total_images if total_images > 0 else 0
     median_area = np.median(combined["areas"]) if combined.get("areas") else 0
 
     print(f"\n{'='*50}")
-    print(f"[+] Dataset analysis complete!")
+    print("[+] Dataset analysis complete!")
     print(f"    Total images:           {total_images}")
     print(f"    Total instances:        {combined['total_instances']}")
     print(f"    Mean objects/image:     {mean_objs:.2f}")

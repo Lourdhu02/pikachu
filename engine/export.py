@@ -3,8 +3,9 @@ import time
 from pathlib import Path
 import yaml
 import numpy as np
-import torch
 from ultralytics import YOLO
+
+from engine.utils import get_device
 
 
 def parse_args():
@@ -38,7 +39,7 @@ def validate_onnx(onnx_path: str, imgsz: int):
         inputs = {session.get_inputs()[0].name: dummy}
         outputs = session.run(None, inputs)
 
-        print(f"[+] ONNX inference successful")
+        print("[+] ONNX inference successful")
         print(f"    Outputs: {len(outputs)} tensors")
         for i, o in enumerate(outputs):
             print(f"    Output {i}: shape {o.shape}")
@@ -72,7 +73,7 @@ def main():
     half = cfg.get("half", True)
     dynamic = cfg.get("dynamic", True)
     simplify = cfg.get("simplify", True)
-    device = cfg.get("device", "") or ("cuda:0" if __import__("torch").cuda.is_available() else "cpu")
+    device = cfg.get("device", "") or get_device()
     int8 = cfg.get("int8", False)
 
     print(f"[*] Loading model from {weights_path}")
@@ -98,7 +99,7 @@ def main():
     elapsed = time.time() - t0
 
     if not Path(export_path).exists():
-        print(f"[!] Export failed: output not found")
+        print("[!] Export failed: output not found")
         return
 
     print(f"[+] Export complete! Saved to: {export_path}")
@@ -108,7 +109,7 @@ def main():
         validate_onnx(export_path, imgsz)
 
     print(f"\n{'='*50}")
-    print(f"[+] Export summary:")
+    print("[+] Export summary:")
     print(f"    Format:     {fmt}")
     print(f"    Weights:    {export_path}")
     print(f"    Time:       {elapsed:.2f}s")

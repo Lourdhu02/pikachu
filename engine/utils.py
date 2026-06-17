@@ -99,5 +99,7 @@ def set_seed(seed: int = 42):
 
 def get_device() -> str:
     if torch.cuda.is_available():
-        return "cuda:0"
+        return "cuda"
+    if torch.backends.mps.is_available():
+        return "mps"
     return "cpu"

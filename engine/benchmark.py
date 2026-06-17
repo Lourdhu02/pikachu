@@ -1,10 +1,11 @@
 import argparse
 import time
 from pathlib import Path
-import yaml
 import numpy as np
 import torch
 from ultralytics import YOLO
+
+from engine.utils import get_device
 
 
 def parse_args():
@@ -71,7 +72,7 @@ def main():
         return
 
     results = {}
-    device = args.device or ("cuda:0" if __import__("torch").cuda.is_available() else "cpu")
+    device = args.device or get_device()
 
     is_onnx = str(weights_path).endswith(".onnx")
 

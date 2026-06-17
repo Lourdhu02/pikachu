@@ -1,8 +1,9 @@
 import argparse
 import json
 from pathlib import Path
-import numpy as np
 from ultralytics import YOLO
+
+from engine.utils import get_device
 
 
 def parse_args():
@@ -30,7 +31,7 @@ def main():
     print(f"[*] Loading model from {args.weights}")
     model = YOLO(args.weights)
 
-    device = args.device or ("cuda:0" if __import__("torch").cuda.is_available() else "cpu")
+    device = args.device or get_device()
 
     print(f"[*] Running inference on {args.source}")
     results = model.predict(
@@ -67,8 +68,6 @@ def main():
 
         if args.save_json:
             img_path = r.path if hasattr(r, "path") else ""
-            img_w = r.orig_shape[1] if hasattr(r, "orig_shape") else 0
-            img_h = r.orig_shape[0] if hasattr(r, "orig_shape") else 0
             for i in range(n):
                 poly = boxes[i].reshape(-1).tolist()
                 all_preds.append({
@@ -89,7 +88,7 @@ def main():
 
     save_txt_msg = "enabled" if args.save_txt else "disabled"
     print(f"\n{'='*50}")
-    print(f"[+] Inference complete!")
+    print("[+] Inference complete!")
     print(f"    Total objects detected: {total_objects}")
     print(f"    Average confidence:     {avg_conf:.4f}")
     print(f"    Annotated images:       {out_dir}")
